@@ -1,0 +1,22 @@
+import { colors, Typography } from "@mui/material";
+import { Box } from "@mui/system";
+import React from "react";
+
+const Footer = () => {
+  return (
+    <Box
+      sx={{
+        flexGrow: 1,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100px",
+        backgroundColor: colors.blue[900],
+      }}
+    >
+      <Typography sx={{color: colors.common.white}}>Footer</Typography>
+    </Box>
+  );
+};
+
+export default Footer;
