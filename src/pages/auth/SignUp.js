@@ -17,8 +17,12 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../lib/config/firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../lib/config/firebase";
+import { useContextApi } from "../../lib/hooks/useContextApi";
 
 const SignUp = () => {
+  const { setIsAuth, setCurrentUserData } = useContextApi();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowpassword] = useState(null);
@@ -29,6 +33,11 @@ const SignUp = () => {
     setShowpassword(!showPassword);
   };
 
+  const createUserDB = async (data, userID) => {
+    const userCollectionsRef = doc(db, "Users", userID);
+    setDoc(userCollectionsRef, data);
+  };
+
   const handleSignUp = () => {
     if (email === "" || password === "") {
       return;
@@ -36,7 +45,15 @@ const SignUp = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        navigate("/")
+        const userData = {
+          displayName: user.displayName,
+          email: user.email,
+          photo: user.photoURL,
+        };
+        setCurrentUserData(userData);
+        createUserDB(userData, user.email);
+        setIsAuth(true);
+        navigate("/dashboard");
       })
       .catch((error) => {
         const errorCode = error.code;

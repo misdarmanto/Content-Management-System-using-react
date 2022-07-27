@@ -16,7 +16,7 @@ import { colors } from "@mui/material";
 
 const CardStyle = ({ data }) => {
   return (
-    <Card sx={{ mt: 5, mb: 5 }}>
+    <Card sx={{ mt: 5, mb: 5 }} onClick={() => console.log("card on click")}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="avatar">
@@ -38,6 +38,7 @@ const CardStyle = ({ data }) => {
         alt="thumbnail"
       />
       <CardContent>
+        <Typography sx={{ fontWeight: "bold" }}>{data.title}</Typography>
         <Typography variant="body2" color="text.secondary">
           {data.text}...
         </Typography>

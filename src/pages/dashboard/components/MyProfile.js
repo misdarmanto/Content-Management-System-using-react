@@ -1,0 +1,58 @@
+import React, { useState } from "react";
+import ListSubheader from "@mui/material/ListSubheader";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import DraftsIcon from "@mui/icons-material/Drafts";
+import SendIcon from "@mui/icons-material/Send";
+import { Typography } from "@mui/material";
+
+import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
+import MailRoundedIcon from "@mui/icons-material/MailRounded";
+import { useContextApi } from "../../../lib/hooks/useContextApi";
+
+const MyProfile = () => {
+  const { currentUserData } = useContextApi();
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <List
+        sx={{
+          width: { xs: 360, sm: 400, md: 500 },
+          bgcolor: "background.paper",
+          p: 5,
+        }}
+        component="nav"
+        aria-labelledby="nested-list-subheader"
+        subheader={
+          <ListSubheader component="div" id="nested-list-subheader">
+            <Typography sx={{ textAlign: "center", fontWeight: "bold" }}>
+              My Profile
+            </Typography>
+          </ListSubheader>
+        }
+      >
+        <ListItemButton>
+          <ListItemIcon>
+            <PersonRoundedIcon />
+          </ListItemIcon>
+          <ListItemText primary={currentUserData.displayName || currentUserData.email.slice(5) + "..."} />
+        </ListItemButton>
+        <ListItemButton>
+          <ListItemIcon>
+            <MailRoundedIcon />
+          </ListItemIcon>
+          <ListItemText primary={currentUserData.email} />
+        </ListItemButton>
+      </List>
+    </div>
+  );
+};
+
+export default MyProfile;

@@ -19,8 +19,15 @@ import GoogleIcon from "@mui/icons-material/Google";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../lib/config/firebase";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../lib/config/firebase";
+import { useContextApi } from "../../lib/hooks/useContextApi";
 
 const Login = () => {
+  const { setIsAuth, setCurrentUserData } = useContextApi();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowpassword] = useState(null);
@@ -35,11 +42,49 @@ const Login = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
+        const userData = {
+          displayName: user.displayName,
+          email: user.email,
+          photo: user.photoURL,
+        };
+        setCurrentUserData(userData);
         navigate("/Dashboard");
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
+      });
+  };
+
+  const createUserDB = async (data, userID) => {
+    const userCollectionsRef = doc(db, "Users", userID);
+    setDoc(userCollectionsRef, data);
+  };
+
+  const handleSignUpWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const user = result.user;
+        const userData = {
+          displayName: user.displayName,
+          email: user.email,
+          photo: user.photoURL,
+        };
+        setCurrentUserData(userData);
+        createUserDB(userData, user.email);
+        setIsAuth(true);
+        navigate("/Dashboard");
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
       });
   };
 
@@ -117,6 +162,7 @@ const Login = () => {
           anonim
         </Button>
         <Button
+          onClick={handleSignUpWithGoogle}
           startIcon={<GoogleIcon />}
           variant="outlined"
           sx={{ mt: 2, minWidth: "250px" }}
@@ -127,7 +173,7 @@ const Login = () => {
           <Typography sx={{ color: colors.grey[700] }}>
             Belum Punya Akun?
           </Typography>
-          <Button onClick={() => navigate("/signin")}>SignUp</Button>
+          <Button onClick={() => navigate("/SignUp")}>SignUp</Button>
         </Stack>
       </Card>
     </div>

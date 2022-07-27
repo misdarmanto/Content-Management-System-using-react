@@ -10,12 +10,15 @@ import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
+
+import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
+import ExitToAppTwoToneIcon from "@mui/icons-material/ExitToAppTwoTone";
+
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
-import { Button, colors } from "@mui/material";
+import { Button, colors, ListItemButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useContextApi } from "../../lib/hooks/useContextApi";
 import { signOut } from "firebase/auth";
@@ -61,27 +64,14 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Navbar() {
-  const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
-
   const { isAuth, setIsAuth } = useContextApi();
 
   const navigate = useNavigate();
-
-  const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
   };
 
   const handleMobileMenuOpen = (event) => {
@@ -91,37 +81,14 @@ export default function Navbar() {
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
-        // Sign-out successful.
+        setIsAuth(false);
+        navigate("/login");
       })
-      .catch((error) => {
-        // An error happened.
-      });
+      .catch((error) => {});
   };
 
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
-
   const mobileMenuId = "primary-search-account-menu-mobile";
-  const renderMobileMenu = (
+  const renderMobileMenu = isAuth ? (
     <Menu
       anchorEl={mobileMoreAnchorEl}
       anchorOrigin={{
@@ -137,37 +104,46 @@ export default function Navbar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
+      <MenuItem onClick={() => navigate("/Dashboard")}>
+        <IconButton>
+          <DashboardRoundedIcon />
         </IconButton>
-        <p>Messages</p>
+        <p>Dashboard</p>
       </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
+      <MenuItem onClick={handleLogout}>
+        <IconButton>
+          <LogoutOutlinedIcon />
         </IconButton>
-        <p>Notifications</p>
+        <p>Logout</p>
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
+    </Menu>
+  ) : (
+    <Menu
+      anchorEl={mobileMoreAnchorEl}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      id={mobileMenuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isMobileMenuOpen}
+      onClose={handleMobileMenuClose}
+    >
+      <MenuItem onClick={() => navigate("/Login")}>
+        <IconButton>
+          <LoginRoundedIcon />
         </IconButton>
-        <p>Profile</p>
+        <p>Login</p>
+      </MenuItem>
+      <MenuItem onClick={() => navigate("/SignUp")}>
+        <IconButton>
+          <ExitToAppTwoToneIcon />
+        </IconButton>
+        <p>Sign Up</p>
       </MenuItem>
     </Menu>
   );
@@ -206,62 +182,46 @@ export default function Navbar() {
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {isAuth ? (
               <>
-                <IconButton
-                  size="large"
-                  aria-label="show 4 new mails"
-                  color="inherit"
-                >
-                  <Badge badgeContent={4} color="error">
-                    <MailIcon />
-                  </Badge>
-                </IconButton>
-                <IconButton
-                  size="large"
-                  aria-label="show 17 new notifications"
-                  color="inherit"
-                >
-                  <Badge badgeContent={17} color="error">
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton>
-
-                <IconButton onClick={() => navigate("/Dashboard")}>
-                  <Typography
-                    sx={{ color: colors.common.white, fontWeight: "bold" }}
-                  >
+                <ListItemButton onClick={() => navigate("/Dashboard")}>
+                  <DashboardRoundedIcon />
+                  <Typography sx={{ fontWeight: "bold", pl: 1 }}>
                     Dashboard
                   </Typography>
-                </IconButton>
+                </ListItemButton>
 
-                <IconButton
-                  onClick={() => {
-                    handleLogout();
-                    navigate("/login");
-                  }}
-                >
-                  <Typography
-                    sx={{ color: colors.common.white, fontWeight: "bold" }}
-                  >
+                <ListItemButton onClick={handleLogout}>
+                  <LogoutOutlinedIcon />
+                  <Typography sx={{ fontWeight: "bold", pl: 1 }}>
                     Logout
                   </Typography>
-                </IconButton>
+                </ListItemButton>
               </>
             ) : (
               <>
-                <IconButton onClick={() => navigate("/login")}>
+                <ListItemButton onClick={() => navigate("/login")}>
+                  <LoginRoundedIcon />
                   <Typography
-                    sx={{ color: colors.common.white, fontWeight: "bold" }}
+                    sx={{
+                      color: colors.common.white,
+                      fontWeight: "bold",
+                      pl: 0.7,
+                    }}
                   >
                     Login
                   </Typography>
-                </IconButton>
-                <IconButton onClick={() => navigate("/signin")}>
+                </ListItemButton>
+                <ListItemButton onClick={() => navigate("/signin")}>
+                  <ExitToAppTwoToneIcon />
                   <Typography
-                    sx={{ color: colors.common.white, fontWeight: "bold" }}
+                    sx={{
+                      color: colors.common.white,
+                      fontWeight: "bold",
+                      pl: 0.7,
+                    }}
                   >
-                    Sign In
+                    Sign Up
                   </Typography>
-                </IconButton>
+                </ListItemButton>
               </>
             )}
           </Box>
@@ -280,7 +240,6 @@ export default function Navbar() {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {renderMenu}
     </Box>
   );
 }
