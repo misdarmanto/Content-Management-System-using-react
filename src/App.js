@@ -10,10 +10,12 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./lib/config/firebase";
 import Dashboard from "./pages/dashboard/Index";
 import SignUp from "./pages/auth/SignUp";
+import DetailArticel from "./pages/home/components/DetileArticel";
 
 function App() {
   const [isAuth, setIsAuth] = useState(false);
   const [currentUserData, setCurrentUserData] = useState(null);
+  const [currentUserID, setCurrentUserID] = useState(null);
 
   const theme = createTheme({
     palette: {
@@ -32,6 +34,7 @@ function App() {
           photo: user.photoURL,
         };
         setCurrentUserData(userData);
+        setCurrentUserID(user.email);
         setIsAuth(true);
       } else {
       }
@@ -40,11 +43,19 @@ function App() {
 
   return (
     <ContextApi.Provider
-      value={{ isAuth, setIsAuth, currentUserData, setCurrentUserData }}
+      value={{
+        isAuth,
+        setIsAuth,
+        currentUserData,
+        setCurrentUserData,
+        currentUserID,
+        setCurrentUserID,
+      }}
     >
       <BrowserRouter>
         <Routes>
           <Route index element={<Home />} />
+          <Route path="DetailArticel" element={<DetailArticel />} />
           {!isAuth && (
             <>
               <Route path="Login" element={<Login />} />

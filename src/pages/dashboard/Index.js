@@ -19,7 +19,13 @@ import { useContextApi } from "../../lib/hooks/useContextApi";
 import { signOut } from "firebase/auth";
 import { auth } from "../../lib/config/firebase";
 
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
@@ -27,45 +33,48 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 
 import MyArticel from "./components/MyArticel";
 import MyProfile from "./components/MyProfile";
-import DashboardHome from "./components/DashboardHome";
 import CreateArticel from "./components/CreateArticel";
 
 const drawerWidth = 240;
 
 function Dashboard(props) {
   const { window } = props;
-  const [mobileOpen, setMobileOpen] = useState(false);
   const { setIsAuth } = useContextApi();
+  const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [openDialogLogout, setOpenDialogLogout] = useState(false);
 
-  const [navigationSelect, setNavigationSelect] = useState("articels");
+  const [navigationSelect, setNavigationSelect] = useState("articles");
 
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
         setIsAuth(false);
-        navigate("/Login");
+        navigate("/Login", { replace: true });
       })
       .catch((error) => {
         // An error happened.
       });
   };
 
-  const navigate = useNavigate();
+  const hanldeDialogLogOut = () => {
+    setOpenDialogLogout(!openDialogLogout);
+  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const DrawerListNavigation = () => {
+  const DashboardContain = () => {
     switch (navigationSelect) {
-      case "articels":
+      case "articles":
         return <MyArticel />;
-      case "create articel":
+      case "create article":
         return <CreateArticel />;
       case "profile":
         return <MyProfile />;
       default:
-        return <DashboardHome />;
+        break
     }
   };
 
@@ -73,7 +82,7 @@ function Dashboard(props) {
     <div>
       <Toolbar />
       <List>
-        {["articels", "create articel", "profile"].map((text, index) => (
+        {["articles", "create article", "profile"].map((text, index) => (
           <ListItem key={index} disablePadding>
             <ListItemButton
               onClick={() => {
@@ -89,7 +98,7 @@ function Dashboard(props) {
                         : colors.blue[50],
                   }}
                 >
-                  {text === "articels" && (
+                  {text === "articles" && (
                     <ListAltIcon
                       sx={{
                         color:
@@ -99,7 +108,7 @@ function Dashboard(props) {
                       }}
                     />
                   )}
-                  {text === "create articel" && (
+                  {text === "create article" && (
                     <CreateNewFolderIcon
                       sx={{
                         color:
@@ -121,7 +130,15 @@ function Dashboard(props) {
                   )}
                 </IconButton>
               </ListItemIcon>
-              <ListItemText primary={text} sx={{ color: colors.grey[700] }} />
+              <ListItemText
+                primary={text}
+                sx={{
+                  color:
+                    navigationSelect === text
+                      ? colors.blue[700]
+                      : colors.grey[700],
+                }}
+              />
             </ListItemButton>
           </ListItem>
         ))}
@@ -161,11 +178,11 @@ function Dashboard(props) {
             justifyContent="flex-end"
             alignItems="flex-end"
           >
-            <ListItemButton onClick={() => navigate("/")}>
+            <ListItemButton onClick={() => navigate("/", { replace: true })}>
               <HomeRoundedIcon />
               <Typography sx={{ fontWeight: "bold" }}>Home</Typography>
             </ListItemButton>
-            <ListItemButton onClick={handleLogout}>
+            <ListItemButton onClick={hanldeDialogLogOut}>
               <LogoutOutlinedIcon />
               <Typography sx={{ fontWeight: "bold" }}>Logout</Typography>
             </ListItemButton>
@@ -216,11 +233,38 @@ function Dashboard(props) {
           p: 3,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           backgroundColor: colors.grey[100],
-          minHeight: "100vh"
+          minHeight: "100vh",
         }}
       >
         <Toolbar />
-        <DrawerListNavigation />
+        <DashboardContain />
+
+        <Dialog
+          open={openDialogLogout}
+          onClose={hanldeDialogLogOut}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{"Logout"}</DialogTitle>
+          <DialogContent>
+            {/* <DialogContentText id="alert-dialog-description">
+            Let Google help apps determine location. This means sending anonymous
+            location data to Google, even when no apps are running.
+          </DialogContentText> */}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={hanldeDialogLogOut}>Cancel</Button>
+            <Button
+              onClick={() => {
+                hanldeDialogLogOut();
+                handleLogout();
+              }}
+              autoFocus
+            >
+              Logout
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </Box>
   );

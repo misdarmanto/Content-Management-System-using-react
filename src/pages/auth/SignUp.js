@@ -24,6 +24,7 @@ import { useContextApi } from "../../lib/hooks/useContextApi";
 const SignUp = () => {
   const { setIsAuth, setCurrentUserData } = useContextApi();
   const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowpassword] = useState(null);
 
@@ -39,14 +40,14 @@ const SignUp = () => {
   };
 
   const handleSignUp = () => {
-    if (email === "" || password === "") {
+    if (email === "" || password === "" || userName === "") {
       return;
     }
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
         const userData = {
-          displayName: user.displayName,
+          displayName: userName,
           email: user.email,
           photo: user.photoURL,
         };
@@ -96,6 +97,16 @@ const SignUp = () => {
 
         <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
           <TextField
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            id="userName"
+            label="User name"
+            variant="outlined"
+          />
+        </FormControl>
+
+        <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+          <TextField
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             id="outlined-basic"
@@ -103,6 +114,7 @@ const SignUp = () => {
             variant="outlined"
           />
         </FormControl>
+
         <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
           <InputLabel htmlFor="outlined-adornment-password">
             Password

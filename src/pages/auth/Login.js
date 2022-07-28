@@ -9,13 +9,15 @@ import {
   Typography,
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
+import FaceIcon from "@mui/icons-material/Face";
+import GoogleIcon from "@mui/icons-material/Google";
+
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
 import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import GoogleIcon from "@mui/icons-material/Google";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../lib/config/firebase";
@@ -26,7 +28,7 @@ import { db } from "../../lib/config/firebase";
 import { useContextApi } from "../../lib/hooks/useContextApi";
 
 const Login = () => {
-  const { setIsAuth, setCurrentUserData } = useContextApi();
+  const { setIsAuth, setCurrentUserData, setCurrentUserID } = useContextApi();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,6 +50,7 @@ const Login = () => {
           photo: user.photoURL,
         };
         setCurrentUserData(userData);
+        setCurrentUserID(user.email)
         navigate("/Dashboard");
       })
       .catch((error) => {
@@ -72,9 +75,10 @@ const Login = () => {
           photo: user.photoURL,
         };
         setCurrentUserData(userData);
+        setCurrentUserID(user.email)
         createUserDB(userData, user.email);
         setIsAuth(true);
-        navigate("/Dashboard");
+        navigate("/Dashboard", {replace: true});
       })
       .catch((error) => {
         // Handle Errors here.
@@ -158,8 +162,12 @@ const Login = () => {
           Login
         </Button>
         <Typography sx={{ mt: 2, color: colors.grey[700] }}>OR</Typography>
-        <Button variant="outlined" sx={{ mt: 1, minWidth: "250px" }}>
-          anonim
+        <Button
+          startIcon={<FaceIcon />}
+          variant="outlined"
+          sx={{ mt: 1, minWidth: "250px" }}
+        >
+          Anonymous
         </Button>
         <Button
           onClick={handleSignUpWithGoogle}
@@ -167,7 +175,7 @@ const Login = () => {
           variant="outlined"
           sx={{ mt: 2, minWidth: "250px" }}
         >
-          Login with google
+          Signin with google
         </Button>
         <Stack direction="row" mt={2} alignItems="center">
           <Typography sx={{ color: colors.grey[700] }}>
@@ -181,3 +189,9 @@ const Login = () => {
 };
 
 export default Login;
+
+
+
+
+
+

@@ -11,6 +11,12 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
@@ -64,11 +70,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Navbar() {
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const { isAuth, setIsAuth } = useContextApi();
-
   const navigate = useNavigate();
+  
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const [openDialogLogout, setOpenDialogLogout] = useState(false);
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
@@ -85,6 +93,10 @@ export default function Navbar() {
         navigate("/login");
       })
       .catch((error) => {});
+  };
+
+  const hanldeDialogLogOut = () => {
+    setOpenDialogLogout(!openDialogLogout);
   };
 
   const mobileMenuId = "primary-search-account-menu-mobile";
@@ -104,13 +116,13 @@ export default function Navbar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem onClick={() => navigate("/Dashboard")}>
+      <MenuItem onClick={() => navigate("/Dashboard", {replace: true})}>
         <IconButton>
           <DashboardRoundedIcon />
         </IconButton>
         <p>Dashboard</p>
       </MenuItem>
-      <MenuItem onClick={handleLogout}>
+      <MenuItem onClick={hanldeDialogLogOut}>
         <IconButton>
           <LogoutOutlinedIcon />
         </IconButton>
@@ -189,7 +201,7 @@ export default function Navbar() {
                   </Typography>
                 </ListItemButton>
 
-                <ListItemButton onClick={handleLogout}>
+                <ListItemButton onClick={hanldeDialogLogOut}>
                   <LogoutOutlinedIcon />
                   <Typography sx={{ fontWeight: "bold", pl: 1 }}>
                     Logout
@@ -240,6 +252,33 @@ export default function Navbar() {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
+
+      <Dialog
+          open={openDialogLogout}
+          onClose={hanldeDialogLogOut}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{"Logout"}</DialogTitle>
+          <DialogContent>
+            {/* <DialogContentText id="alert-dialog-description">
+            Let Google help apps determine location. This means sending anonymous
+            location data to Google, even when no apps are running.
+          </DialogContentText> */}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={hanldeDialogLogOut}>Cancel</Button>
+            <Button
+              onClick={() => {
+                hanldeDialogLogOut();
+                handleLogout();
+              }}
+              autoFocus
+            >
+              Logout
+            </Button>
+          </DialogActions>
+        </Dialog>
     </Box>
   );
 }
