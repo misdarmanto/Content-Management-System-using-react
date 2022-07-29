@@ -23,12 +23,19 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
 import ExitToAppTwoToneIcon from "@mui/icons-material/ExitToAppTwoTone";
 
+import Popover from "@mui/material/Popover";
+
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import { Button, colors, ListItemButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useContextApi } from "../../lib/hooks/useContextApi";
 import { signOut } from "firebase/auth";
 import { auth } from "../../lib/config/firebase";
+import { grey } from "@mui/material/colors";
+
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -70,13 +77,48 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Navbar() {
-  const { isAuth, setIsAuth } = useContextApi();
+  const { isAuth, setIsAuth, allArticles } = useContextApi();
+  const titleArticles = allArticles.map((data) => data.title);
+
   const navigate = useNavigate();
-  
+
+  const [searchResult, setSearchResult] = useState([]);
+
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const [openDialogLogout, setOpenDialogLogout] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleOpenPopUpSearch = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClosePopUpSearch = () => {
+    setAnchorEl(null);
+    setSearchResult([]);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
+  const handleSearch = (e) => {
+    if (e.target.value === "") {
+      setSearchResult([]);
+      return;
+    }
+    const regex = titleArticles.filter((title) => {
+      if (title.toUpperCase().search(e.target.value.toUpperCase()) !== -1) {
+        return title;
+      }
+    });
+    setSearchResult(regex);
+  };
+
+  const handleNavigateSearchResult = (title) => {
+    const result = allArticles.find((data) => data.title === title);
+    navigate("/DetailArticle", { state: result });
+  };
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
@@ -116,7 +158,7 @@ export default function Navbar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem onClick={() => navigate("/Dashboard", {replace: true})}>
+      <MenuItem onClick={() => navigate("/Dashboard", { replace: true })}>
         <IconButton>
           <DashboardRoundedIcon />
         </IconButton>
@@ -181,7 +223,7 @@ export default function Navbar() {
           >
             My Blog
           </Typography>
-          <Search>
+          <Search onFocus={handleOpenPopUpSearch}>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -190,6 +232,58 @@ export default function Navbar() {
               inputProps={{ "aria-label": "search" }}
             />
           </Search>
+
+          {/* poper search */}
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClosePopUpSearch}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+          >
+            <Box
+              sx={{
+                width: { xs: "300px", sm: "500px" },
+                height: { xs: "300px", sm: "500px" },
+                padding: "20px",
+              }}
+            >
+              <Search
+                onChange={handleSearch}
+                sx={{
+                  border: "1px solid #f3f3f3",
+                  borderRadius: "10px",
+                  backgroundColor: grey[50],
+                }}
+              >
+                <SearchIconWrapper>
+                  <SearchIcon />
+                </SearchIconWrapper>
+                <StyledInputBase
+                  placeholder="Search…"
+                  inputProps={{ "aria-label": "search" }}
+                />
+              </Search>
+              <List sx={{ mt: 2 }}>
+                {searchResult.map((title, index) => (
+                  <ListItem key={index} disablePadding>
+                    <ListItemButton
+                      onClick={() => {
+                        handleNavigateSearchResult(title);
+                        handleClosePopUpSearch();
+                      }}
+                    >
+                      <ListItemText primary={title} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          </Popover>
+
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {isAuth ? (
@@ -254,31 +348,31 @@ export default function Navbar() {
       {renderMobileMenu}
 
       <Dialog
-          open={openDialogLogout}
-          onClose={hanldeDialogLogOut}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">{"Logout"}</DialogTitle>
-          <DialogContent>
-            {/* <DialogContentText id="alert-dialog-description">
+        open={openDialogLogout}
+        onClose={hanldeDialogLogOut}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Logout"}</DialogTitle>
+        <DialogContent>
+          {/* <DialogContentText id="alert-dialog-description">
             Let Google help apps determine location. This means sending anonymous
             location data to Google, even when no apps are running.
           </DialogContentText> */}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={hanldeDialogLogOut}>Cancel</Button>
-            <Button
-              onClick={() => {
-                hanldeDialogLogOut();
-                handleLogout();
-              }}
-              autoFocus
-            >
-              Logout
-            </Button>
-          </DialogActions>
-        </Dialog>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={hanldeDialogLogOut}>Cancel</Button>
+          <Button
+            onClick={() => {
+              hanldeDialogLogOut();
+              handleLogout();
+            }}
+            autoFocus
+          >
+            Logout
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

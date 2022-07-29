@@ -17,6 +17,7 @@ function App() {
   const [isAuth, setIsAuth] = useState(false);
   const [currentUserData, setCurrentUserData] = useState(null);
   const [currentUserID, setCurrentUserID] = useState(null);
+  const [allArticles, setAllArticles] = useState([]);
 
   const theme = createTheme({
     palette: {
@@ -51,6 +52,8 @@ function App() {
         setCurrentUserData,
         currentUserID,
         setCurrentUserID,
+        allArticles,
+        setAllArticles,
       }}
     >
       <BrowserRouter>

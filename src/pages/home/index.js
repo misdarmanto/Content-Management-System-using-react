@@ -4,16 +4,16 @@ import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import { Box, colors, Pagination, Stack } from "@mui/material";
 import CardStyle from "./components/CardStyle";
-import { articelData } from "./articelData";
 import { useNavigate } from "react-router-dom";
-import { collection, where, query, onSnapshot } from "firebase/firestore";
+import { collection, query, onSnapshot } from "firebase/firestore";
 import { db } from "../../lib/config/firebase";
 import SkeletonCard from "./components/SkeletonCard";
+import { useContextApi } from "../../lib/hooks/useContextApi";
 
 const Home = () => {
   const navigate = useNavigate();
+  const {allArticles, setAllArticles} = useContextApi()
 
-  const [articel, setArticel] = useState([]);
   const [isDataAvaliable, setIsDataAvaliable] = useState(false);
 
   const handleNavigation = (data) => {
@@ -27,7 +27,7 @@ const Home = () => {
       querySnapshot.forEach((doc) => {
         data.push({docID : doc.id, ...doc.data()});
       });
-      setArticel(data);
+      setAllArticles(data)
       setIsDataAvaliable(true)
     });
     return () => unsubscribe;
@@ -38,7 +38,7 @@ const Home = () => {
       <Navbar />
       <Container maxWidth="md" sx={{ mt: 5, mb: 20 }}>
         {isDataAvaliable &&
-          articel.map((data) => (
+          allArticles.map((data) => (
             <CardStyle
               key={data.id}
               data={data}
