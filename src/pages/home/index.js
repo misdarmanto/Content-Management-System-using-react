@@ -8,23 +8,27 @@ import { articelData } from "./articelData";
 import { useNavigate } from "react-router-dom";
 import { collection, where, query, onSnapshot } from "firebase/firestore";
 import { db } from "../../lib/config/firebase";
+import SkeletonCard from "./components/SkeletonCard";
 
 const Home = () => {
-  const [articel, setArticel] = useState([]);
   const navigate = useNavigate();
 
+  const [articel, setArticel] = useState([]);
+  const [isDataAvaliable, setIsDataAvaliable] = useState(false);
+
   const handleNavigation = (data) => {
-    navigate("/DetailArticel", { state: data });
+    navigate("/DetailArticle", { state: data });
   };
 
   useEffect(() => {
-    const q = query(collection(db, "Articels"));
+    const q = query(collection(db, "Articles"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const data = [];
       querySnapshot.forEach((doc) => {
-        data.push(doc.data());
+        data.push({docID : doc.id, ...doc.data()});
       });
-      setArticel(data)
+      setArticel(data);
+      setIsDataAvaliable(true)
     });
     return () => unsubscribe;
   }, []);
@@ -33,13 +37,16 @@ const Home = () => {
     <Box component="div" sx={{ backgroundColor: colors.grey[100] }}>
       <Navbar />
       <Container maxWidth="md" sx={{ mt: 5, mb: 20 }}>
-        {articel.map((data) => (
-          <CardStyle
-            key={data.id}
-            data={data}
-            onClick={() => handleNavigation(data)}
-          />
-        ))}
+        {isDataAvaliable &&
+          articel.map((data) => (
+            <CardStyle
+              key={data.id}
+              data={data}
+              onClick={() => handleNavigation(data)}
+            />
+          ))}
+        {!isDataAvaliable &&
+          [1, 2, 3, 4, 5].map((value) => <SkeletonCard key={value} />)}
       </Container>
       <Stack justifyContent="center" alignItems="center" m={5}>
         <Pagination count={10} variant="outlined" shape="rounded" />

@@ -10,7 +10,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./lib/config/firebase";
 import Dashboard from "./pages/dashboard/Index";
 import SignUp from "./pages/auth/SignUp";
-import DetailArticel from "./pages/home/components/DetileArticel";
+import DetailArticle from "./pages/home/components/DetileArticle";
+import EditeArticle from "./pages/dashboard/components/EditeArticle";
 
 function App() {
   const [isAuth, setIsAuth] = useState(false);
@@ -55,14 +56,20 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route index element={<Home />} />
-          <Route path="DetailArticel" element={<DetailArticel />} />
+          <Route path="DetailArticle" element={<DetailArticle />} />
+
           {!isAuth && (
             <>
               <Route path="Login" element={<Login />} />
               <Route path="SignUp" element={<SignUp />} />
             </>
           )}
-          {isAuth && <Route path="dashboard" element={<Dashboard />} />}
+          {isAuth && (
+            <>
+              <Route path="EditeArticle" element={<EditeArticle />} />
+              <Route path="dashboard" element={<Dashboard />} />
+            </>
+          )}
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </BrowserRouter>

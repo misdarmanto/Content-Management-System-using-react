@@ -38,11 +38,11 @@ const MyProfile = () => {
           </ListSubheader>
         }
       >
-        <ListItemButton>
+        <ListItemButton sx={{mt: 5}}>
           <ListItemIcon>
             <PersonRoundedIcon />
           </ListItemIcon>
-          <ListItemText primary={currentUserData.displayName || currentUserData.email.slice(5) + "..."} />
+          <ListItemText primary={currentUserData.displayName || "Anonymouse"} />
         </ListItemButton>
         <ListItemButton>
           <ListItemIcon>

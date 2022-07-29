@@ -10,19 +10,27 @@ import { colors, IconButton, Stack, Typography } from "@mui/material";
 import { Visibility } from "@mui/icons-material";
 import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 import CommentIcon from "@mui/icons-material/Comment";
+import { useNavigate } from "react-router-dom";
+import DataEmptyAnimation from "./DataEmptyAnimation";
 
-const MyArticel = () => {
+const MyArticle = () => {
   const { currentUserID } = useContextApi();
   const [listArticles, setListArticles] = useState([]);
   const [isDataAvaliable, setIsDataAvaliable] = useState(false);
 
+  const navigate = useNavigate();
+
+  const handleNavigation = (data) => {
+    navigate("/EditeArticle", { state: data });
+  };
+
   useEffect(() => {
     const getListArticles = async () => {
-      const q = query(collectionGroup(db, "Articels"));
+      const q = query(collectionGroup(db, "Articles"));
       const querySnapshot = await getDocs(q);
       const data = [];
       querySnapshot.forEach((doc) => {
-        data.push(doc.data());
+        data.push({ docID: doc.id, ...doc.data() });
       });
       const filterData = data.filter((value) => value.userID === currentUserID);
       setListArticles(filterData);
@@ -48,7 +56,7 @@ const MyArticel = () => {
       }}
     >
       <List>
-        {listArticles.length === 0 && <h1>No Articel</h1>}
+        {listArticles.length === 0 && <DataEmptyAnimation />}
         {listArticles.length !== 0 &&
           listArticles.map((data, index) => (
             <Stack
@@ -60,7 +68,7 @@ const MyArticel = () => {
                 border: "1px solid #e3e3e3",
                 p: 1,
                 mb: 3,
-                borderRadius: "10px",
+                borderRadius: "5px",
               }}
             >
               <Typography fontWeight="bold" sx={{ color: colors.grey[500] }}>
@@ -72,13 +80,22 @@ const MyArticel = () => {
                 <IconButton>
                   <FavoriteRoundedIcon />
                 </IconButton>
+                <Typography variant="body2" color="text.secondary">
+                  {data.likes.length}
+                </Typography>
                 <IconButton>
                   <Visibility />
                 </IconButton>
+                <Typography variant="body2" color="text.secondary">
+                  {data.views}
+                </Typography>
                 <IconButton>
                   <CommentIcon />
                 </IconButton>
-                <IconButton>
+                <Typography variant="body2" color="text.secondary">
+                  22
+                </Typography>
+                <IconButton onClick={() => handleNavigation(data)}>
                   <CreateRoundedIcon />
                 </IconButton>
               </Stack>
@@ -89,4 +106,4 @@ const MyArticel = () => {
   );
 };
 
-export default MyArticel;
+export default MyArticle;

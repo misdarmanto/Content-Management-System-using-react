@@ -14,7 +14,7 @@ const Footer = () => {
         backgroundColor: colors.blue[900],
       }}
     >
-      <Typography sx={{color: colors.common.white}}>Footer</Typography>
+      <Typography sx={{color: colors.common.white}}>&copy; 2022</Typography>
     </Box>
   );
 };

@@ -31,9 +31,9 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 
-import MyArticel from "./components/MyArticel";
+import MyArticle from "./components/MyArticle";
 import MyProfile from "./components/MyProfile";
-import CreateArticel from "./components/CreateArticel";
+import CreateArticle from "./components/CreateArticle";
 
 const drawerWidth = 240;
 
@@ -68,9 +68,9 @@ function Dashboard(props) {
   const DashboardContain = () => {
     switch (navigationSelect) {
       case "articles":
-        return <MyArticel />;
+        return <MyArticle />;
       case "create article":
-        return <CreateArticel />;
+        return <CreateArticle />;
       case "profile":
         return <MyProfile />;
       default:

@@ -13,6 +13,7 @@ import ShareIcon from "@mui/icons-material/Share";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CommentIcon from "@mui/icons-material/Comment";
 import { colors } from "@mui/material";
+import { generateRandomColors } from "../../../lib/functions/generateColor";
 
 const CardStyle = ({ data, onClick }) => {
   const textRef = useRef(null);
@@ -25,8 +26,11 @@ const CardStyle = ({ data, onClick }) => {
     <Card sx={{ mt: 5, mb: 5 }}>
       <CardHeader
         avatar={
-          <Avatar sx={{ bgcolor: blue[500] }} aria-label="avatar">
-            {data.author[0]}
+          <Avatar
+            sx={{ bgcolor: generateRandomColors(data.author[0].toUpperCase()) }}
+            aria-label="avatar"
+          >
+            {data.author[0].toUpperCase()}
           </Avatar>
         }
         action={
@@ -58,7 +62,7 @@ const CardStyle = ({ data, onClick }) => {
           <FavoriteIcon sx={{ color: colors.red[500] }} />
         </IconButton>
         <Typography variant="body2" color="text.secondary">
-          {data.likes}
+          {data.likes.length}
         </Typography>
 
         <IconButton aria-label="views">

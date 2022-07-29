@@ -1,7 +1,12 @@
 import React from "react";
+import NotFoundAnimation from "./components/NotFoundAnimation";
 
 const PageNotFound = () => {
-  return <h1>PageNotFound</h1>;
+  return (
+    <div>
+      <NotFoundAnimation />
+    </div>
+  );
 };
 
 export default PageNotFound;

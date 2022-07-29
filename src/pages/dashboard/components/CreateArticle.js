@@ -8,7 +8,7 @@ import { doc, setDoc, collection } from "firebase/firestore";
 import { db } from "../../../lib/config/firebase";
 import { useContextApi } from "../../../lib/hooks/useContextApi";
 
-const CreateArticel = () => {
+const CreateArticle = () => {
   const { quill, quillRef } = useQuill();
   const { currentUserData, currentUserID } = useContextApi();
 
@@ -18,7 +18,7 @@ const CreateArticel = () => {
     if (title === "") return;
     const contentHTML = quill.root.innerHTML;
 
-    const articelCollectionsRef = doc(collection(db, "Articels"));
+    const articelCollectionsRef = doc(collection(db, "Articles"));
     const date = new Date();
 
     const data = {
@@ -30,8 +30,8 @@ const CreateArticel = () => {
       author: currentUserData.displayName,
       photo: currentUserData.photo,
       body: contentHTML,
-      likes: 5,
-      views: 5,
+      likes: [],
+      views: 0,
     };
     setDoc(articelCollectionsRef, data)
       .then(() => {
@@ -82,4 +82,4 @@ const CreateArticel = () => {
   );
 };
 
-export default CreateArticel;
+export default CreateArticle;
