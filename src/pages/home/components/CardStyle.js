@@ -76,7 +76,7 @@ const CardStyle = ({ data, onClick }) => {
           <CommentIcon />
         </IconButton>
         <Typography variant="body2" color="text.secondary">
-          22
+          {data?.comments ? data?.comments.length : "0"}
         </Typography>
       </CardActions>
     </Card>

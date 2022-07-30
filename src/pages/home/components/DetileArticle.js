@@ -7,7 +7,6 @@ import ShareIcon from "@mui/icons-material/Share";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CommentIcon from "@mui/icons-material/Comment";
 import { colors } from "@mui/material";
-import { blue } from "@mui/material/colors";
 
 import {
   doc,
@@ -19,14 +18,18 @@ import {
 import { db } from "../../../lib/config/firebase";
 import { useContextApi } from "../../../lib/hooks/useContextApi";
 import { generateRandomColors } from "../../../lib/functions/generateColor";
+import CommentArticle from "./CreateComment";
+import CommentList from "./CommentsLIst";
 
 const DetailArticle = () => {
   const { state } = useLocation();
   const textRef = useRef();
+
   const { currentUserID } = useContextApi();
 
   const [isUserAlreadyLike, setIsUserAlreadyLike] = useState(false);
   const [likes, setLikes] = useState(0);
+  const [userComments, setUserComments] = useState([]);
 
   const handleIncrementLike = async () => {
     const docArticleRef = doc(db, "Articles", state.docID);
@@ -53,10 +56,12 @@ const DetailArticle = () => {
     });
   };
 
+  const handleUpdateCommentList = (newComment) => {
+    setUserComments([...userComments, newComment]);
+  };
+
   useEffect(() => {
-    const isTrue = state.likes.includes(currentUserID);
-    setIsUserAlreadyLike(isTrue);
-    setLikes(state.likes.length);
+    window.scrollTo(0, 0);
   }, []);
 
   let isFirstLoad = true;
@@ -68,6 +73,15 @@ const DetailArticle = () => {
       }
       isFirstLoad = false;
     };
+  }, []);
+
+  useEffect(() => {
+    const isTrue = state.likes.includes(currentUserID);
+    setIsUserAlreadyLike(isTrue);
+    setLikes(state.likes.length);
+    if (state.comments) {
+      setUserComments(state.comments);
+    }
   }, []);
 
   return (
@@ -119,7 +133,7 @@ const DetailArticle = () => {
             <CommentIcon />
           </IconButton>
           <Typography variant="body2" color="text.secondary">
-            22
+            {state?.comments ? state?.comments.length : "0"}
           </Typography>
           <IconButton aria-label="comments">
             <ShareIcon />
@@ -134,6 +148,18 @@ const DetailArticle = () => {
         <img src={state.thumbnail} style={{ height: "250px", width: "100%" }} />
       )}
       <p ref={textRef}></p>
+
+      <div style={{ marginTop: "70px" }}>
+        {userComments.length !== 0 &&
+          userComments.map((data, index) => (
+            <CommentList
+              key={index}
+              commentData={data}
+              onSendComment={handleUpdateCommentList}
+            />
+          ))}
+      </div>
+      <CommentArticle docID={state.docID} />
     </Container>
   );
 };
