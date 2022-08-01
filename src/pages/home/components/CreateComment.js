@@ -7,12 +7,19 @@ import { Button, colors, Stack, Typography } from "@mui/material";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "../../../lib/config/firebase";
 import { useContextApi } from "../../../lib/hooks/useContextApi";
+import { useNavigate } from "react-router-dom";
 
 const CreateComment = ({ docID }) => {
+  const navigate = useNavigate()
   const { quill, quillRef } = useQuill();
-  const { currentUserData, currentUserID } = useContextApi();
+  const { currentUserData, currentUserID, isAuth } = useContextApi();
 
   const handleSendComment = async () => {
+    if (!isAuth) {
+      navigate("/login")
+      return;
+    }
+
     const contentHTML = quill.root.innerHTML;
 
     const docArticleRef = doc(db, "Articles", docID);

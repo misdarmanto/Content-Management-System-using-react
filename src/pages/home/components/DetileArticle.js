@@ -1,7 +1,7 @@
 import { Avatar, IconButton, Stack, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -24,14 +24,20 @@ import CommentList from "./CommentsLIst";
 const DetailArticle = () => {
   const { state } = useLocation();
   const textRef = useRef();
+  const navigate = useNavigate()
 
-  const { currentUserID } = useContextApi();
+  const { currentUserID, isAuth } = useContextApi();
 
   const [isUserAlreadyLike, setIsUserAlreadyLike] = useState(false);
   const [likes, setLikes] = useState(0);
   const [userComments, setUserComments] = useState([]);
 
   const handleIncrementLike = async () => {
+    if (!isAuth) {
+      navigate("/login")
+      return;
+    }
+
     const docArticleRef = doc(db, "Articles", state.docID);
 
     if (isUserAlreadyLike) {

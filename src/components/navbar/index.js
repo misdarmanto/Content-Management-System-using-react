@@ -22,7 +22,8 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
 import ExitToAppTwoToneIcon from "@mui/icons-material/ExitToAppTwoTone";
 
-import Popover from "@mui/material/Popover";
+import Popover from '@mui/material/Popover';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import { Button, colors, ListItemButton } from "@mui/material";
@@ -100,6 +101,12 @@ export default function Navbar() {
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
+
+  // window.onclick = () => {
+  //   if (open) {
+  //     handleClosePopUpSearch()
+  //   }
+  // };
 
   const handleSearch = (e) => {
     if (e.target.value === "") {
@@ -222,66 +229,75 @@ export default function Navbar() {
           >
             My Blog
           </Typography>
-          <Search onFocus={handleOpenPopUpSearch}>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
 
-          {/* poper search */}
-          <Popover
-            id={id}
-            open={open}
-            anchorEl={anchorEl}
-            onClose={handleClosePopUpSearch}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-          >
-            <Box
-              sx={{
-                width: { xs: "300px", sm: "500px" },
-                height: { xs: "300px", sm: "500px" },
-                padding: "20px",
-              }}
-            >
-              <Search
-                onChange={handleSearch}
-                sx={{
-                  border: "1px solid #f3f3f3",
-                  borderRadius: "10px",
-                  backgroundColor: grey[50],
-                }}
-              >
-                <SearchIconWrapper>
-                  <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                  placeholder="Search…"
-                  inputProps={{ "aria-label": "search" }}
-                />
-              </Search>
-              <List sx={{ mt: 2 }}>
-                {searchResult.map((title, index) => (
-                  <ListItem key={index} disablePadding>
-                    <ListItemButton
-                      onClick={() => {
-                        handleNavigateSearchResult(title);
-                        handleClosePopUpSearch();
+          <PopupState variant="popover" popupId="demo-popup-popover">
+            {(popupState) => (
+              <div>
+                <Search {...bindTrigger(popupState)}>
+                  <SearchIconWrapper>
+                    <SearchIcon />
+                  </SearchIconWrapper>
+                  <StyledInputBase
+                    placeholder="Search…"
+                    inputProps={{ "aria-label": "search" }}
+                  />
+                </Search>
+
+                <Popover
+                  {...bindPopover(popupState)}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: { xs: "300px", sm: "500px" },
+                      height: { xs: "300px", sm: "500px" },
+                      padding: "20px",
+                    }}
+                  >
+                    <Search
+                      onChange={handleSearch}
+                      sx={{
+                        border: "1px solid #f3f3f3",
+                        borderRadius: "10px",
+                        backgroundColor: grey[50],
                       }}
                     >
-                      <ListItemText primary={title} />
-                    </ListItemButton>
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          </Popover>
+                      <SearchIconWrapper>
+                        <SearchIcon />
+                      </SearchIconWrapper>
+                      <StyledInputBase
+                        placeholder="Search…"
+                        inputProps={{ "aria-label": "search" }}
+                      />
+                    </Search>
+                    <List sx={{ mt: 2 }}>
+                      {searchResult.map((title, index) => (
+                        <ListItem key={index} disablePadding>
+                          <ListItemButton
+                            onClick={() => {
+                              handleNavigateSearchResult(title);
+                              // handleClosePopUpSearch();
+                            }}
+                          >
+                            <ListItemText primary={title} />
+                          </ListItemButton>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Box>
+                </Popover>
+              </div>
+            )}
+          </PopupState>
+
+          {/* poper search */}
 
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
