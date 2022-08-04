@@ -3,8 +3,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PageNotFound from "./pages/404";
 import Login from "./pages/auth/Login";
 import Home from "./pages/home";
-import { createTheme, ThemeProvider } from "@mui/system";
-import { blue } from "@mui/material/colors";
 import { ContextApi } from "./lib/helper/ContextApi";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./lib/config/firebase";
@@ -18,14 +16,6 @@ function App() {
   const [currentUserData, setCurrentUserData] = useState(null);
   const [currentUserID, setCurrentUserID] = useState(null);
   const [allArticles, setAllArticles] = useState([]);
-
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: blue[500],
-      },
-    },
-  });
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {

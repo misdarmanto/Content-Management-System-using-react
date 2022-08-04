@@ -3,7 +3,6 @@ import { Container } from "@mui/system";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CommentIcon from "@mui/icons-material/Comment";
 import { colors } from "@mui/material";
@@ -141,9 +140,6 @@ const DetailArticle = () => {
           <Typography variant="body2" color="text.secondary">
             {state?.comments ? state?.comments.length : "0"}
           </Typography>
-          <IconButton aria-label="comments">
-            <ShareIcon />
-          </IconButton>
         </Stack>
       </Stack>
 

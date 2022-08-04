@@ -22,8 +22,8 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
 import ExitToAppTwoToneIcon from "@mui/icons-material/ExitToAppTwoTone";
 
-import Popover from '@mui/material/Popover';
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import Popover from "@mui/material/Popover";
+import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import { Button, colors, ListItemButton } from "@mui/material";
@@ -88,25 +88,6 @@ export default function Navbar() {
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const [openDialogLogout, setOpenDialogLogout] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const handleOpenPopUpSearch = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClosePopUpSearch = () => {
-    setAnchorEl(null);
-    setSearchResult([]);
-  };
-
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
-
-  // window.onclick = () => {
-  //   if (open) {
-  //     handleClosePopUpSearch()
-  //   }
-  // };
 
   const handleSearch = (e) => {
     if (e.target.value === "") {
@@ -256,8 +237,8 @@ export default function Navbar() {
                 >
                   <Box
                     sx={{
-                      width: { xs: "300px", sm: "500px" },
-                      height: { xs: "300px", sm: "500px" },
+                      width: { xs: "300px", sm: "400px" },
+                      height: { xs: "300px", sm: "400px" },
                       padding: "20px",
                     }}
                   >
@@ -281,10 +262,7 @@ export default function Navbar() {
                       {searchResult.map((title, index) => (
                         <ListItem key={index} disablePadding>
                           <ListItemButton
-                            onClick={() => {
-                              handleNavigateSearchResult(title);
-                              // handleClosePopUpSearch();
-                            }}
+                            onClick={() => handleNavigateSearchResult(title)}
                           >
                             <ListItemText primary={title} />
                           </ListItemButton>

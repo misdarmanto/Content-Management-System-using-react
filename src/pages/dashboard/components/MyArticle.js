@@ -3,15 +3,24 @@ import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import CreateRoundedIcon from "@mui/icons-material/CreateRounded";
 
-import { collectionGroup, query, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  getDocs,
+  where,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../../lib/config/firebase";
 import { useContextApi } from "../../../lib/hooks/useContextApi";
-import { colors, IconButton, Stack, Typography } from "@mui/material";
+import { colors, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { Visibility } from "@mui/icons-material";
 import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 import CommentIcon from "@mui/icons-material/Comment";
 import { useNavigate } from "react-router-dom";
 import DataEmptyAnimation from "./DataEmptyAnimation";
+import PublicIcon from "@mui/icons-material/Public";
+import DraftsRoundedIcon from "@mui/icons-material/DraftsRounded";
 
 const MyArticle = () => {
   const { currentUserID } = useContextApi();
@@ -26,18 +35,27 @@ const MyArticle = () => {
 
   useEffect(() => {
     const getListArticles = async () => {
-      const q = query(collectionGroup(db, "Articles"));
+      const q = query(
+        collection(db, "Articles"),
+        where("userID", "==", currentUserID)
+      );
       const querySnapshot = await getDocs(q);
       const data = [];
       querySnapshot.forEach((doc) => {
         data.push({ docID: doc.id, ...doc.data() });
       });
-      const filterData = data.filter((value) => value.userID === currentUserID);
-      setListArticles(filterData);
+      setListArticles(data);
       setIsDataAvaliable(true);
     };
     getListArticles();
   }, []);
+
+  const handleUpdate = async (docID, isPublish) => {
+    const articleRef = doc(db, "Articles", docID);
+    await updateDoc(articleRef, {
+      isPublish: isPublish ? false : true,
+    });
+  };
 
   if (!isDataAvaliable) return "";
 
@@ -95,9 +113,31 @@ const MyArticle = () => {
                 <Typography variant="body2" color="text.secondary">
                   {data?.comments ? data?.comments.length : "0"}
                 </Typography>
-                <IconButton onClick={() => handleNavigation(data)}>
-                  <CreateRoundedIcon />
-                </IconButton>
+
+                <Stack direction="row" alignItems="center" mr={2} ml={2}>
+                  {data.isPublish ? (
+                    <Tooltip title="publish" placement="top">
+                      <IconButton
+                        onClick={() => handleUpdate(data.docID, data.isPublish)}
+                      >
+                        <PublicIcon />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="publish" placement="top">
+                      <IconButton
+                        onClick={() => handleUpdate(data.docID, data.isPublish)}
+                      >
+                        <DraftsRoundedIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  <Tooltip title="edit" placement="top">
+                    <IconButton onClick={() => handleNavigation(data)}>
+                      <CreateRoundedIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
               </Stack>
             </Stack>
           ))}

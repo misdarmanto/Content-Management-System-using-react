@@ -7,9 +7,7 @@ import CardActions from "@mui/material/CardActions";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import { blue, red } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CommentIcon from "@mui/icons-material/Comment";
 import { colors } from "@mui/material";
@@ -32,11 +30,6 @@ const CardStyle = ({ data, onClick }) => {
           >
             {data.author[0].toUpperCase()}
           </Avatar>
-        }
-        action={
-          <IconButton aria-label="share">
-            <ShareIcon />
-          </IconButton>
         }
         title={data.author}
         subheader={data.createdAt}

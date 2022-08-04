@@ -5,7 +5,7 @@ import Footer from "../../components/footer";
 import { Box, colors, Pagination, Stack } from "@mui/material";
 import CardStyle from "./components/CardStyle";
 import { useNavigate } from "react-router-dom";
-import { collection, query, onSnapshot } from "firebase/firestore";
+import { collection, query, onSnapshot, where } from "firebase/firestore";
 import { db } from "../../lib/config/firebase";
 import SkeletonCard from "./components/SkeletonCard";
 import { useContextApi } from "../../lib/hooks/useContextApi";
@@ -21,7 +21,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    const q = query(collection(db, "Articles"));
+    const q = query(collection(db, "Articles"), where('isPublish', '==', true));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const data = [];
       querySnapshot.forEach((doc) => {
@@ -48,9 +48,6 @@ const Home = () => {
         {!isDataAvaliable &&
           [1, 2, 3, 4, 5].map((value) => <SkeletonCard key={value} />)}
       </Container>
-      <Stack justifyContent="center" alignItems="center" m={5}>
-        <Pagination count={10} variant="outlined" shape="rounded" />
-      </Stack>
       <Footer />
     </Box>
   );
