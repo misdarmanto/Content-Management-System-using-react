@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import { Box } from "@mui/system";
-import { Button, colors, TextField, Stack, IconButton } from "@mui/material";
+import {
+  Button,
+  colors,
+  TextField,
+  Stack,
+  IconButton,
+  CircularProgress,
+} from "@mui/material";
 
 import { doc, setDoc, collection } from "firebase/firestore";
 import { db } from "../../../lib/config/firebase";
@@ -17,13 +24,11 @@ const CreateArticle = () => {
 
   const [title, setTitle] = useState("");
   const [imageURL, setImageURL] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  function handleChange(event) {
+  function handleUploadImage(event) {
+    setIsLoading(true);
     const file = event.target.files[0];
-
-    if (!file) {
-      alert("Please upload an image first!");
-    }
 
     const storageRef = ref(storage, `/files/${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
@@ -45,9 +50,10 @@ const CreateArticle = () => {
     uploadTask.on(
       "state_changed",
       handleGetPercent,
-      (err) => console.log(err),
+      console.log,
       handleGetDOwnloadUrl
     );
+    setIsLoading(false);
   }
 
   const handlePublishArticel = async ({ isPublish }) => {
@@ -61,7 +67,7 @@ const CreateArticle = () => {
       id: Date.now(),
       userID: currentUserID,
       title: title,
-      thumbnail: "",
+      thumbnail: imageURL || "",
       createdAt: date.toDateString(),
       author: currentUserData.displayName,
       photo: currentUserData.photo,
@@ -74,6 +80,7 @@ const CreateArticle = () => {
       .then(() => {
         quill.root.innerHTML = "";
         setTitle("");
+        setImageURL(null)
         console.log("ok");
       })
       .catch((e) => console.error(e));
@@ -96,7 +103,7 @@ const CreateArticle = () => {
       <Box
         component={"div"}
         sx={{
-          height: "100px",
+          height: "200px",
           backgroundColor: "#F5F5F5",
           mb: 2,
           display: "flex",
@@ -104,17 +111,22 @@ const CreateArticle = () => {
           justifyContent: "center",
         }}
       >
-        <IconButton
-          color="primary"
-          aria-label="upload picture"
-          component="label"
-          onChange={handleChange}
-        >
-          <input hidden accept="image/*" multiple type="file" />
-          <PhotoCamera />
-        </IconButton>
-        <p>Thumbnail</p>
-        {imageURL && <img src={imageURL} width={"200px"} height="100px" />}
+        {isLoading && <CircularProgress />}
+        {!imageURL && (
+          <Stack>
+            <IconButton
+              color="primary"
+              aria-label="upload picture"
+              component="label"
+              onChange={handleUploadImage}
+            >
+              <input hidden accept="image/*" multiple type="file" />
+              <PhotoCamera />
+            </IconButton>
+            <small>thumbnail</small>
+          </Stack>
+        )}
+        {imageURL && <img src={imageURL} height="100%" width={"100%"} />}
       </Box>
 
       <TextField

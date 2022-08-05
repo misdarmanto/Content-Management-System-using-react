@@ -21,10 +21,11 @@ const EditeArticle = () => {
     }
   }, [quill]);
 
-  const handlePublishArticel = async () => {
+  const handlePublishArticel = async ({ isPublish }) => {
     if (title === "") return;
     state.title = title;
     state.body = quill.root.innerHTML;
+    state.isPublish = isPublish;
 
     const articelCollectionsRef = doc(db, "Articles", state.docID);
     updateDoc(articelCollectionsRef, state)
@@ -68,8 +69,16 @@ const EditeArticle = () => {
         sx={{ mt: 2 }}
         spacing={2}
       >
-        <Button variant="outlined">Draf</Button>
-        <Button variant="outlined" onClick={handlePublishArticel}>
+        <Button
+          variant="outlined"
+          onClick={() => handlePublishArticel({ isPublish: false })}
+        >
+          Draf
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => handlePublishArticel({ isPublish: true })}
+        >
           Publish
         </Button>
       </Stack>

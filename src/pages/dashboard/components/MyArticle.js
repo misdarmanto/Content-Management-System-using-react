@@ -7,9 +7,10 @@ import {
   collection,
   query,
   getDocs,
+  updateDoc,
+  deleteDoc,
   where,
   doc,
-  updateDoc,
 } from "firebase/firestore";
 import { db } from "../../../lib/config/firebase";
 import { useContextApi } from "../../../lib/hooks/useContextApi";
@@ -21,16 +22,29 @@ import { useNavigate } from "react-router-dom";
 import DataEmptyAnimation from "./DataEmptyAnimation";
 import PublicIcon from "@mui/icons-material/Public";
 import DraftsRoundedIcon from "@mui/icons-material/DraftsRounded";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 const MyArticle = () => {
   const { currentUserID } = useContextApi();
   const [listArticles, setListArticles] = useState([]);
   const [isDataAvaliable, setIsDataAvaliable] = useState(false);
+  const [openPopUp, setOpenPopUp] = useState(false);
 
   const navigate = useNavigate();
 
   const handleNavigation = (data) => {
     navigate("/EditeArticle", { state: data });
+  };
+
+  const handlePopUp = () => {
+    setOpenPopUp(!openPopUp);
   };
 
   useEffect(() => {
@@ -57,6 +71,10 @@ const MyArticle = () => {
     });
   };
 
+  const handleDeleteArticle = async (docID) => {
+    await deleteDoc(doc(db, "Articles", docID));
+  };
+
   if (!isDataAvaliable) return "";
 
   return (
@@ -79,8 +97,8 @@ const MyArticle = () => {
           listArticles.map((data, index) => (
             <Stack
               key={index}
-              direction="row"
-              alignItems="center"
+              direction={{ xs: "column", sm: "row" }}
+              alignItems={{ xs: "self-start", sm: "center" }}
               justifyContent="space-between"
               sx={{
                 border: "1px solid #e3e3e3",
@@ -89,32 +107,49 @@ const MyArticle = () => {
                 borderRadius: "5px",
               }}
             >
-              <Typography fontWeight="bold" sx={{ color: colors.grey[500] }}>
-                {data.title.length >= 35
-                  ? data.title.slice(0, 35) + "..."
-                  : data.title}
-              </Typography>
+              <Stack>
+                <Typography fontWeight="bold" sx={{ color: colors.grey[500] }}>
+                  {data.title.length >= 35
+                    ? data.title.slice(0, 35) + "..."
+                    : data.title}
+                </Typography>
+                <small style={{ color: "gray" }}>
+                  {data.isPublish ? "publish" : "draf"} : {data.createdAt}
+                </small>
+              </Stack>
               <Stack direction="row" alignItems="center">
-                <IconButton>
-                  <FavoriteRoundedIcon />
-                </IconButton>
+                <Tooltip title="likes" placement="top">
+                  <IconButton>
+                    <FavoriteRoundedIcon />
+                  </IconButton>
+                </Tooltip>
                 <Typography variant="body2" color="text.secondary">
                   {data.likes.length}
                 </Typography>
-                <IconButton>
-                  <Visibility />
-                </IconButton>
+                <Tooltip title="views" placement="top">
+                  <IconButton>
+                    <Visibility />
+                  </IconButton>
+                </Tooltip>
                 <Typography variant="body2" color="text.secondary">
                   {data.views}
                 </Typography>
-                <IconButton>
-                  <CommentIcon />
-                </IconButton>
+                <Tooltip title="comments" placement="top">
+                  <IconButton>
+                    <CommentIcon />
+                  </IconButton>
+                </Tooltip>
                 <Typography variant="body2" color="text.secondary">
                   {data?.comments ? data?.comments.length : "0"}
                 </Typography>
 
                 <Stack direction="row" alignItems="center" mr={2} ml={2}>
+                  <Tooltip title="delete" placement="top">
+                    <IconButton onClick={handlePopUp}>
+                      <DeleteRoundedIcon />
+                    </IconButton>
+                  </Tooltip>
+
                   {data.isPublish ? (
                     <Tooltip title="publish" placement="top">
                       <IconButton
@@ -139,6 +174,28 @@ const MyArticle = () => {
                   </Tooltip>
                 </Stack>
               </Stack>
+
+              <Dialog
+                open={openPopUp}
+                onClose={handlePopUp}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">
+                  {"Delete Article"}
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    apakah anda yakin ingin menghapus artikel ini?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handlePopUp}>cancle</Button>
+                  <Button onClick={() => handleDeleteArticle(data.docID)}>
+                    Ok
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </Stack>
           ))}
       </List>
